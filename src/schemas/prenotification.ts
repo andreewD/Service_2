@@ -1,29 +1,24 @@
-import { Static, Type } from '@sinclair/typebox'
-
-import { id } from '.'
+import { Static, Type } from "@sinclair/typebox";
 
 const prenotification = Type.Object({
-    id:Type.String(),
-    email:Type.String({ format: 'email' }),
-    time:Type.Number(),
-    message:Type.String()
-})
+  id: Type.String(),
+  email: Type.String({ format: "email" }),
+  time: Type.Number(),
+  message: Type.String(),
+});
 
-type Prenotification = Static<typeof prenotification>
+type Prenotification = Static<typeof prenotification>;
 
 const storedPrenotification = Type.Object({
-    id:Type.String(),
-    email:Type.String({ format: 'email' }),
-    time:Type.Number(),
-    message:Type.Array(Type.String()),
-    timestamp:Type.Integer()
-})
+  id: Type.String(),
+  email: Type.String({ format: "email" }),
+  time: Type.Number(),
+  message: Type.Array(Type.String()),
+  timestamp: Type.Integer(),
+});
 
-type StoredPrenotification = Static<typeof storedPrenotification>
+type StoredPrenotification = Static<typeof storedPrenotification>;
 
+const storePrenotification = Type.Object({ args: prenotification });
 
-
-const storePrenotification = Type.Object({args:prenotification})
-
-
-export {Prenotification,storePrenotification,StoredPrenotification}
+export { Prenotification, storePrenotification, StoredPrenotification };

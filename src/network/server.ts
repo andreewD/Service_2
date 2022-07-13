@@ -4,6 +4,8 @@ import pino, { HttpLogger } from "express-pino-logger";
 import { CronJob } from "cron";
 import { applyRoutes } from "./router";
 import { notificationData } from "storage";
+import { transporter } from "./connections";
+
 const PORT = (process.env.PORT as string) || 1996;
 
 class Server {
@@ -46,15 +48,34 @@ class Server {
     applyRoutes(this.#app);
   }
 
+  #timeChecker() {
+    let dateNow = Date.now();
+
+    notificationData.map(async (item, i, array) => {
+      // now-15 sec < timestamp <= now
+      if (item.timestamp > dateNow - 1000 * 15 && item.timestamp <= dateNow) {
+        let message = item.message.map((item) => {
+          return `- ${item}\n`;
+        });
+
+        transporter.sendMail({
+          from: "<ayrton20082009@gmail.com>",
+          to: item.email,
+          text: message.toString(),
+        });
+        array = array.splice(i, 1);
+      }
+    });
+  }
+
   public start(): void {
     this.#app.listen(PORT, () => {
       this.#log.logger.info(`Server running at port ${PORT}`);
-
+      // cronjob every 15 seconds
       new CronJob(
-        "*/30 * * * * *",
-        function () {
-          console.log("You will see this message every 30 seconds");
-          console.log(notificationData);
+        "*/15 * * * * *",
+        () => {
+          this.#timeChecker();
         },
         null,
         true,
