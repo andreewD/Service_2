@@ -1,22 +1,19 @@
-import { Application, Response, Request, Router, NextFunction } from 'express'
-import swaggerUi from 'swagger-ui-express'
-import httpErrors from 'http-errors'
+import { Application, Response, Request, Router, NextFunction } from "express";
+import httpErrors from "http-errors";
 
-import { response } from './response'
-import { Home ,Prenotification} from './routes'
-import { docs } from 'utils'
+import { response } from "./response";
+import { Home, Prenotification } from "./routes";
 
-const routers = [Home,Prenotification]
+const routers = [Home, Prenotification];
 
-const applyRoutes = (app:Application):void=>{
-    app.use('/', Home)
-    app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(docs))
-    routers.forEach((router:Router):Application=>app.use('/api',router))
+const applyRoutes = (app: Application): void => {
+  app.use("/", Home);
+  routers.forEach((router: Router): Application => app.use("/api", router));
 
-  // Handling 404 error  
+  // Handling 404 error
   app.use((req, res, next) => {
-    next(new httpErrors.NotFound('This route does not exists'))
-  })
+    next(new httpErrors.NotFound("This route does not exists"));
+  });
   app.use(
     (
       error: httpErrors.HttpError,
@@ -28,12 +25,10 @@ const applyRoutes = (app:Application):void=>{
         error: true,
         message: error.message,
         res,
-        status: error.status
-      })
-      next()
+        status: error.status,
+      });
+      next();
     }
-  )
-
-
-}
-export {applyRoutes}
+  );
+};
+export { applyRoutes };
